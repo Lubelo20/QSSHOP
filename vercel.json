@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "echo \"no install needed\"",
+  "buildCommand": "echo \"static storefront — no build step\"",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/api/products", "destination": "/api/products.json" },
+    { "source": "/api/categories", "destination": "/api/categories.json" }
+  ]
+}
