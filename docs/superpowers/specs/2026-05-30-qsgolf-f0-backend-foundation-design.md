@@ -200,10 +200,40 @@ API while preserving every function name and the page logic.
 
 ## 8. Setup / Housekeeping
 
+### 8.0 Preflight — environment setup (must pass before any code)
+
+F0 implementation cannot start until the local toolchain is present and verified. The plan's
+first step is a preflight gate that checks each tool, reports versions, and stops with clear
+install instructions if anything is missing — so implementation never stalls midway.
+
+**Required toolchain (macOS / darwin):**
+
+| Tool      | Min version | Verify command         | Install (macOS, Homebrew)                     |
+|-----------|-------------|------------------------|-----------------------------------------------|
+| PHP       | 8.2+        | `php -v`               | `brew install php`                            |
+| Composer  | 2.x         | `composer --version`   | `brew install composer`                       |
+| MySQL     | 8.0+        | `mysql --version`      | `brew install mysql` then `brew services start mysql` |
+| Laravel   | 11.x        | (via Composer)         | installed by `composer create-project`        |
+
+**Preflight gate procedure:**
+1. Run each verify command; record versions.
+2. If any tool is missing or below the minimum, **halt** and present the exact install
+   commands above; do not scaffold until the user confirms tools are installed.
+3. Confirm a MySQL server is reachable and create an empty `qsgolf` database
+   (`CREATE DATABASE qsgolf;`).
+4. Confirm a DB user/credentials are available for `.env`.
+
+This step is interactive where needed: some installs (e.g. `brew install`, starting MySQL,
+setting a MySQL root password) are run by the user in their own shell. The plan will flag which
+commands the user runs versus which the implementation runs.
+
+### 8.1 Project setup (after preflight passes)
+
 - Fresh Laravel install; existing static site relocated into `public/`.
-- `.env` configured for MySQL; run migrations + seeder.
+- `.env` configured for the `qsgolf` MySQL database; run migrations + seeder.
 - `php artisan serve` for local development.
 - **`git init`** this folder (not currently a git repo) to commit this spec and track all work.
+  *(Done during brainstorming — repo initialized, baseline committed.)*
 
 ---
 
