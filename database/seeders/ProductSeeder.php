@@ -33,7 +33,8 @@ class ProductSeeder extends Seeder
         foreach ($products as $i => $p) {
             $slug = $p['category'];
             unset($p['category']);
-            $p['category_id'] = $catId[$slug];
+            $p['category_id'] = $catId[$slug]
+                ?? throw new \RuntimeException("Unknown category slug '{$slug}' for product {$p['sku']}");
             $p['sort_order'] = $i + 1;
             Product::updateOrCreate(['sku' => $p['sku']], $p);
         }
