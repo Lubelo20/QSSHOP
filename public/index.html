@@ -57,7 +57,7 @@
 </div>
 
 <script type="module">
-  import { PRODUCTS } from './js/products.js';
+  import { PRODUCTS, loadProducts } from './js/products.js';
   import { renderProductCard, showToast } from './js/utils.js';
   import { addToCart } from './js/cart.js';
 
@@ -79,6 +79,7 @@
 
   catSel.addEventListener('change', render);
   sortSel.addEventListener('change', render);
+  await loadProducts();
   render();
 
   document.addEventListener('click', e => {

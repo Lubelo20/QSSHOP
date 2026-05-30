@@ -44,7 +44,7 @@
   <a href="https://wa.me/27000000000?text=Hi%20QS%20Golf%20Coordinators!%20I%27m%20interested%20in..." target="_blank" rel="noopener">💬</a>
 </div>
 <script type="module">
-  import { PRODUCTS } from './js/products.js';
+  import { PRODUCTS, loadProducts } from './js/products.js';
   import { renderProductCard, showToast } from './js/utils.js';
   import { addToCart } from './js/cart.js';
 
@@ -63,6 +63,7 @@
   }
 
   sortSel.addEventListener('change', render);
+  await loadProducts();
   render();
 
   document.addEventListener('click', e => {

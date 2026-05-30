@@ -165,6 +165,7 @@
 <script type="module">
   import { getCartItems, getCartTotal, clearCart } from './js/cart.js';
   import { formatPrice, getShippingRate, applyPromo, showToast } from './js/utils.js';
+  import { loadProducts } from './js/products.js';
 
   let currentStep = 1;
   let discount = 0;
@@ -262,6 +263,7 @@
     location.href = 'order-confirmed.html';
   });
 
+  await loadProducts();
   updateSidebar();
 </script>
 </body>

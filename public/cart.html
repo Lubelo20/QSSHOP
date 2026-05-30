@@ -62,6 +62,7 @@
 <script type="module">
   import { getCartItems, removeFromCart, updateQty, clearCart, getCartTotal } from './js/cart.js';
   import { formatPrice, showToast, applyPromo } from './js/utils.js';
+  import { loadProducts } from './js/products.js';
 
   let discount = 0;
 
@@ -132,6 +133,7 @@
   });
 
   document.addEventListener('cartUpdated', render);
+  await loadProducts();
   render();
 </script>
 </body>

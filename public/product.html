@@ -42,12 +42,13 @@
 </div>
 
 <script type="module">
-  import { getProductById, PRODUCTS } from './js/products.js';
+  import { getProductById, PRODUCTS, loadProducts } from './js/products.js';
   import { formatPrice, getBadgeHTML, getDeliveryDate, renderProductCard, showToast } from './js/utils.js';
   import { addToCart } from './js/cart.js';
 
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
+  await loadProducts();
   const product = id ? getProductById(id) : null;
 
   const detail = document.getElementById('productDetail');
