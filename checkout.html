@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | QS Golf Coordinators</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/includes.js"></script>
+</head>
+<body>
+<div id="announcement-placeholder"></div>
+<div id="nav-placeholder"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <h1 style="margin-bottom:48px">Checkout</h1>
+
+      <!-- Step indicator -->
+      <div class="step-indicator">
+        <div class="step active" id="step-ind-1"><div class="step__num">1</div><span class="step__label">Details</span></div>
+        <div class="step-divider"></div>
+        <div class="step" id="step-ind-2"><div class="step__num">2</div><span class="step__label">Shipping</span></div>
+        <div class="step-divider"></div>
+        <div class="step" id="step-ind-3"><div class="step__num">3</div><span class="step__label">Payment</span></div>
+      </div>
+
+      <div class="checkout-layout">
+        <div>
+          <!-- Step 1 -->
+          <div class="step-panel active" id="panel-1">
+            <h3 style="margin-bottom:28px">Contact Details</h3>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">First name *</label>
+                <input class="form-control" id="firstName" placeholder="John">
+                <div class="form-error" id="err-firstName">First name is required</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last name *</label>
+                <input class="form-control" id="lastName" placeholder="Smith">
+                <div class="form-error" id="err-lastName">Last name is required</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email address *</label>
+              <input class="form-control" id="email" type="email" placeholder="john@company.co.za">
+              <div class="form-error" id="err-email">A valid email is required</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone number *</label>
+              <input class="form-control" id="phone" type="tel" placeholder="071 000 0000">
+              <div class="form-error" id="err-phone">Phone number is required</div>
+            </div>
+            <button class="btn btn--green" id="nextStep1">Continue to Shipping →</button>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="step-panel" id="panel-2">
+            <h3 style="margin-bottom:28px">Shipping Address</h3>
+            <div class="form-group">
+              <label class="form-label">Street address *</label>
+              <input class="form-control" id="address" placeholder="123 Main Street">
+              <div class="form-error" id="err-address">Address is required</div>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">City *</label>
+                <input class="form-control" id="city" placeholder="Johannesburg">
+                <div class="form-error" id="err-city">City is required</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Postal code *</label>
+                <input class="form-control" id="postal" placeholder="2000" maxlength="4">
+                <div class="form-error" id="err-postal">Postal code is required</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Province *</label>
+              <select class="form-control" id="province">
+                <option value="">Select province…</option>
+                <option>Gauteng</option>
+                <option>Western Cape</option>
+                <option>KwaZulu-Natal</option>
+                <option>Eastern Cape</option>
+                <option>Limpopo</option>
+                <option>Mpumalanga</option>
+                <option>North West</option>
+                <option>Free State</option>
+                <option>Northern Cape</option>
+              </select>
+              <div class="form-error" id="err-province">Please select a province</div>
+            </div>
+            <div style="background:var(--off-white);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:28px" id="shippingRateInfo"></div>
+            <div style="display:flex;gap:12px">
+              <button class="btn btn--outline-green" id="backStep2">← Back</button>
+              <button class="btn btn--green" id="nextStep2">Continue to Payment →</button>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="step-panel" id="panel-3">
+            <h3 style="margin-bottom:28px">Payment Method</h3>
+            <div class="payment-options">
+              <label class="payment-option selected">
+                <input type="radio" name="payment" value="payfast" checked>
+                <div>
+                  <div class="payment-option__name">PayFast</div>
+                  <div class="payment-option__desc">Credit card, debit card, instant EFT via PayFast</div>
+                </div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment" value="eft">
+                <div>
+                  <div class="payment-option__name">EFT / Bank Transfer</div>
+                  <div class="payment-option__desc">Pay directly into our business account. Order held until payment clears.</div>
+                </div>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment" value="paygate">
+                <div>
+                  <div class="payment-option__name">PayGate</div>
+                  <div class="payment-option__desc">Secure card payment via PayGate</div>
+                </div>
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Promo code</label>
+              <div style="display:flex;gap:8px">
+                <input class="form-control" id="promoCode" placeholder="e.g. GOLF20" style="flex:1">
+                <button class="btn btn--sm btn--green" id="applyPromo2">Apply</button>
+              </div>
+              <div id="promoMsg2" style="font-size:12px;margin-top:6px"></div>
+            </div>
+            <div style="background:var(--off-white);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:24px" id="finalSummary"></div>
+            <div style="display:flex;gap:12px">
+              <button class="btn btn--outline-green" id="backStep3">← Back</button>
+              <button class="btn btn--green" id="placeOrder">Place Order →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sticky order summary -->
+        <div>
+          <div class="order-summary">
+            <h3>Order Summary</h3>
+            <div id="sidebarItems"></div>
+            <div class="summary-row summary-row--total">
+              <span>Total</span>
+              <span id="sidebarTotal" style="color:var(--green)">R0</span>
+            </div>
+            <p class="vat-note">15% VAT included</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script type="module">
+  import { getCartItems, getCartTotal, clearCart } from './js/cart.js';
+  import { formatPrice, getShippingRate, applyPromo, showToast } from './js/utils.js';
+
+  let currentStep = 1;
+  let discount = 0;
+
+  // Sidebar
+  function updateSidebar() {
+    const items = getCartItems();
+    document.getElementById('sidebarItems').innerHTML = items.map(i =>
+      `<div class="summary-row"><span>${i.product.name} ×${i.qty}</span><span>${formatPrice(i.product.price * i.qty)}</span></div>`
+    ).join('');
+    document.getElementById('sidebarTotal').textContent = formatPrice(getCartTotal() - discount);
+  }
+
+  function goTo(step) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + step).classList.add('active');
+    document.querySelectorAll('.step').forEach((s, i) => {
+      s.classList.toggle('active', i + 1 === step);
+      s.classList.toggle('done', i + 1 < step);
+    });
+    currentStep = step;
+    updateFinalSummary();
+  }
+
+  function required(id) {
+    const val = document.getElementById(id)?.value.trim();
+    const err = document.getElementById('err-' + id);
+    const ok = !!val;
+    if (err) err.classList.toggle('visible', !ok);
+    return ok;
+  }
+
+  function validEmail(id) {
+    const val = document.getElementById(id)?.value.trim();
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    document.getElementById('err-' + id)?.classList.toggle('visible', !ok);
+    return ok;
+  }
+
+  document.getElementById('nextStep1').addEventListener('click', () => {
+    const ok = [required('firstName'), required('lastName'), validEmail('email'), required('phone')].every(Boolean);
+    if (ok) goTo(2);
+  });
+
+  document.getElementById('backStep2').addEventListener('click', () => goTo(1));
+  document.getElementById('nextStep2').addEventListener('click', () => {
+    const ok = [required('address'), required('city'), required('postal'), required('province')].every(Boolean);
+    if (ok) goTo(3);
+  });
+
+  document.getElementById('province').addEventListener('change', () => {
+    const prov = document.getElementById('province').value;
+    const subtotal = getCartTotal();
+    const rate = getShippingRate(prov, subtotal);
+    document.getElementById('shippingRateInfo').innerHTML = rate === 0
+      ? '<strong style="color:#059669">🎉 Free delivery on this order!</strong><p style="font-size:13px;color:var(--muted);margin-top:4px">Your order qualifies for free nationwide delivery.</p>'
+      : `<strong>Shipping to ${prov}: ${formatPrice(rate)}</strong><p style="font-size:13px;color:var(--muted);margin-top:4px">Free delivery on orders over R1,500.</p>`;
+  });
+
+  document.querySelectorAll('.payment-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+
+  document.getElementById('backStep3').addEventListener('click', () => goTo(2));
+
+  function updateFinalSummary() {
+    const prov = document.getElementById('province')?.value || '';
+    const subtotal = getCartTotal();
+    const shipping = getShippingRate(prov, subtotal);
+    const total = subtotal - discount + shipping;
+    document.getElementById('finalSummary').innerHTML = `
+      <div class="summary-row"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+      ${discount ? `<div class="summary-row" style="color:#059669"><span>Discount</span><span>−${formatPrice(discount)}</span></div>` : ''}
+      <div class="summary-row"><span>Shipping</span><span>${shipping === 0 ? '<span style="color:#059669">Free</span>' : formatPrice(shipping)}</span></div>
+      <div class="summary-row summary-row--total"><span>Total (incl. VAT)</span><span style="color:var(--green)">${formatPrice(total)}</span></div>`;
+  }
+
+  document.getElementById('applyPromo2').addEventListener('click', () => {
+    const code = document.getElementById('promoCode').value.trim();
+    const result = applyPromo(code, getCartTotal());
+    const msg = document.getElementById('promoMsg2');
+    if (result) { discount = result.discount; msg.textContent = `✓ ${result.label}`; msg.style.color = '#059669'; }
+    else { discount = 0; msg.textContent = 'Invalid code.'; msg.style.color = 'var(--sale)'; }
+    updateFinalSummary();
+    updateSidebar();
+  });
+
+  document.getElementById('placeOrder').addEventListener('click', () => {
+    const orderNum = 'QS-' + Date.now().toString().slice(-6);
+    sessionStorage.setItem('qs_last_order', JSON.stringify({ num: orderNum, total: getCartTotal() - discount }));
+    clearCart();
+    location.href = 'order-confirmed.html';
+  });
+
+  updateSidebar();
+</script>
+</body>
+</html>

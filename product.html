@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product | QS Golf Coordinators</title>
+  <meta name="description" content="Premium branded golf merchandise from QS Golf Coordinators. Order online, delivered nationwide across South Africa.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/includes.js"></script>
+</head>
+<body>
+<div id="announcement-placeholder"></div>
+<div id="nav-placeholder"></div>
+
+<main>
+  <div class="container">
+    <div class="product-detail" id="productDetail">
+      <p style="color:var(--muted);padding:40px 0">Loading product…</p>
+    </div>
+
+    <!-- Related products -->
+    <div class="section" id="relatedSection" style="display:none">
+      <div style="border-top:1px solid var(--border);padding-top:64px">
+        <div class="section__header--split">
+          <div>
+            <span class="section__label">More Like This</span>
+            <h2>You May Also Like</h2>
+          </div>
+        </div>
+        <div class="product-grid" id="relatedGrid"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="footer-placeholder"></div>
+<div class="whatsapp-float">
+  <a href="https://wa.me/27000000000?text=Hi%20QS%20Golf%20Coordinators!%20I%27m%20interested%20in..." target="_blank" rel="noopener">💬</a>
+</div>
+
+<script type="module">
+  import { getProductById, PRODUCTS } from './js/products.js';
+  import { formatPrice, getBadgeHTML, getDeliveryDate, renderProductCard, showToast } from './js/utils.js';
+  import { addToCart } from './js/cart.js';
+
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  const product = id ? getProductById(id) : null;
+
+  const detail = document.getElementById('productDetail');
+
+  if (!product) {
+    detail.innerHTML = '<p style="padding:60px 0;color:var(--muted)">Product not found. <a href="index.html" style="color:var(--green)">Back to shop →</a></p>';
+  } else {
+    document.title = `${product.name} | QS Golf Coordinators`;
+
+    const isLow = product.stock <= 5;
+    const hasSizes = product.variants?.sizes;
+    const hasColours = product.variants?.colours;
+
+    const sizesHTML = hasSizes ? `
+      <div class="variant-label">Size:</div>
+      <div class="size-options" id="sizeOptions">
+        ${hasSizes.map(s => `<button class="size-btn" data-size="${s}">${s}</button>`).join('')}
+      </div>` : '';
+
+    const coloursHTML = hasColours ? `
+      <div class="variant-label">Colour:</div>
+      <div class="colour-options" id="colourOptions">
+        ${hasColours.map(c => `<button class="colour-btn" data-colour="${c}" title="${c}" style="background:${c === 'Dark Green' ? '#0d4a2a' : c === 'White' ? '#ffffff;border-color:#d1e8da' : '#9ca3af'}"></button>`).join('')}
+      </div>` : '';
+
+    detail.innerHTML = `
+      <div class="product-detail__inner">
+        <div>
+          <div class="product-gallery__main" id="mainImg">
+            ${product.image
+              ? `<img src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover;">`
+              : `<span>${product.emoji}</span>`}
+          </div>
+          <div class="product-gallery__thumbs">
+            <div class="product-gallery__thumb active">
+              ${product.image ? `<img src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r-md)">` : product.emoji}
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="product-info__breadcrumb">
+            <a href="index.html">Home</a> › <a href="${product.slug}.html">${product.category}</a> › ${product.name}
+          </div>
+          <span class="product-info__cat">${product.category}</span>
+          <h1 class="product-info__name">${product.name}</h1>
+          <div class="product-info__prices">
+            <div class="product-info__orig">${formatPrice(product.origPrice)}</div>
+            <div class="product-info__price">${formatPrice(product.price)}</div>
+          </div>
+          ${isLow ? `<div class="stock-warning">⚠️ Only <strong>${product.stock} units left</strong> — order soon!</div>` : ''}
+          <span class="delivery-badge">🚚 Free Delivery on orders over R1,500</span>
+          ${sizesHTML}
+          ${coloursHTML}
+          <div class="variant-label" style="margin-top:20px">Quantity:</div>
+          <div class="qty-control">
+            <button class="qty-btn" id="qtyMinus">−</button>
+            <span class="qty-value" id="qtyVal">1</span>
+            <button class="qty-btn" id="qtyPlus">+</button>
+          </div>
+          <div class="product-add-btns">
+            <button class="btn btn--green btn--full" id="addCartBtn">Add to Cart</button>
+            <a href="https://wa.me/27000000000?text=Hi%20QS!%20I%27m%20interested%20in%20${encodeURIComponent(product.name)}" target="_blank" class="btn btn--whatsapp btn--full">💬 Enquire via WhatsApp</a>
+          </div>
+          <ul class="product-features" style="margin-top:24px">
+            ${product.features.map(f => `<li>${f}</li>`).join('')}
+          </ul>
+          <p style="font-size:13px;color:var(--muted);margin-top:12px">🚚 Order today, receive by <strong>${getDeliveryDate()}</strong></p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="product-tabs">
+        <div class="tab-nav">
+          <button class="tab-btn active" data-tab="description">Description</button>
+          <button class="tab-btn" data-tab="branding">Branding Options</button>
+          <button class="tab-btn" data-tab="sizing">Sizing Guide</button>
+          <button class="tab-btn" data-tab="reviews">Reviews (0)</button>
+        </div>
+        <div class="tab-panel active" id="tab-description">
+          <h3 style="margin-bottom:16px">About This Product</h3>
+          <p style="margin-bottom:20px">${product.description}</p>
+          <h4 style="margin-bottom:12px">Key Features</h4>
+          <ul style="list-style:disc;padding-left:20px;color:var(--text-body);font-size:14px;line-height:2">
+            ${product.features.map(f => `<li>${f}</li>`).join('')}
+          </ul>
+          <h4 style="margin-top:24px;margin-bottom:12px">Ideal For</h4>
+          <ul style="list-style:disc;padding-left:20px;color:var(--text-body);font-size:14px;line-height:2">
+            <li>Corporate golf days</li><li>Client gifts</li><li>Team branded events</li>
+          </ul>
+          <p style="margin-top:24px;font-size:13px;color:var(--muted)">🛒 Available Now | Ships Nationwide in South Africa<br>🚚 Free Delivery on Orders Over R1,500<br>📱 Need a custom quote? WhatsApp us directly!</p>
+        </div>
+        <div class="tab-panel" id="tab-branding">
+          <h3 style="margin-bottom:16px">Branding Options</h3>
+          <p style="margin-bottom:16px;color:var(--text-body)">We offer a range of professional branding methods to suit your requirements:</p>
+          <ul style="list-style:disc;padding-left:20px;color:var(--text-body);font-size:14px;line-height:2.2">
+            <li>Screen printing — 1–6 colour prints, ideal for shirts and bags</li>
+            <li>Embroidery — premium finish for caps and shirts</li>
+            <li>Laser engraving — ideal for tumblers and metal items</li>
+            <li>Branding lead time: 5–7 business days after artwork approval</li>
+            <li>Artwork accepted: AI, EPS, PDF (vector preferred)</li>
+          </ul>
+        </div>
+        <div class="tab-panel" id="tab-sizing">
+          <h3 style="margin-bottom:16px">Sizing Guide</h3>
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead><tr style="background:var(--green-tint)">
+              <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)">Size</th>
+              <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)">Chest (cm)</th>
+              <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)">Length (cm)</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:10px 14px;border-bottom:1px solid var(--border)">S</td><td style="padding:10px 14px;border-bottom:1px solid var(--border)">90–96</td><td style="padding:10px 14px;border-bottom:1px solid var(--border)">70</td></tr>
+              <tr><td style="padding:10px 14px;border-bottom:1px solid var(--border)">M</td><td style="padding:10px 14px;border-bottom:1px solid var(--border)">97–104</td><td style="padding:10px 14px;border-bottom:1px solid var(--border)">72</td></tr>
+              <tr><td style="padding:10px 14px;border-bottom:1px solid var(--border)">L</td><td style="padding:10px 14px;border-bottom:1px solid var(--border)">105–112</td><td style="padding:10px 14px;border-bottom:1px solid var(--border)">74</td></tr>
+              <tr><td style="padding:10px 14px;border-bottom:1px solid var(--border)">XL</td><td style="padding:10px 14px;border-bottom:1px solid var(--border)">113–120</td><td style="padding:10px 14px;border-bottom:1px solid var(--border)">76</td></tr>
+              <tr><td style="padding:10px 14px">XXL</td><td style="padding:10px 14px">121–130</td><td style="padding:10px 14px">78</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tab-panel" id="tab-reviews">
+          <h3 style="margin-bottom:16px">Customer Reviews</h3>
+          <p style="color:var(--muted);font-size:14px">No reviews yet. Be the first to review this product after purchasing.</p>
+        </div>
+      </div>`;
+
+    // Qty controls
+    let qty = 1;
+    document.getElementById('qtyMinus').addEventListener('click', () => {
+      if (qty > 1) { qty--; document.getElementById('qtyVal').textContent = qty; }
+    });
+    document.getElementById('qtyPlus').addEventListener('click', () => {
+      qty++; document.getElementById('qtyVal').textContent = qty;
+    });
+
+    // Size selection
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Colour selection
+    document.querySelectorAll('.colour-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.colour-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Add to cart
+    document.getElementById('addCartBtn').addEventListener('click', () => {
+      const sizeBtn = document.querySelector('.size-btn.active');
+      const colourBtn = document.querySelector('.colour-btn.active');
+      if (hasSizes && !sizeBtn) { showToast('Please select a size first'); return; }
+      if (hasColours && !colourBtn) { showToast('Please select a colour first'); return; }
+      const variant = {};
+      if (sizeBtn) variant.size = sizeBtn.dataset.size;
+      if (colourBtn) variant.colour = colourBtn.dataset.colour;
+      for (let i = 0; i < qty; i++) addToCart(product.id, variant);
+      showToast(`${product.emoji} Added to cart!`);
+    });
+
+    // Related products
+    const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 3);
+    if (related.length) {
+      document.getElementById('relatedSection').style.display = 'block';
+      document.getElementById('relatedGrid').innerHTML = related.map(renderProductCard).join('');
+    }
+
+    // Related add-to-cart
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.add-to-cart-btn');
+      if (!btn) return;
+      addToCart(btn.dataset.id);
+      showToast('Added to cart!');
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gift Sets | QS Golf Coordinators</title>
+  <meta name="description" content="Curated gift boxes and corporate starter packs, beautifully presented and branded for your event.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/includes.js"></script>
+</head>
+<body>
+<div id="announcement-placeholder"></div>
+<div id="nav-placeholder"></div>
+<main>
+  <div class="page-header">
+    <div class="container">
+      <h1>Gift Sets</h1>
+      <p>Curated gift boxes and corporate starter packs, beautifully presented and branded for your event.</p>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <div class="container">
+      <div class="filter-bar__inner">
+        <select id="sortFilter" style="border:1.5px solid var(--border-dark);border-radius:var(--r-md);padding:8px 14px;font-size:13px;background:var(--white)">
+          <option value="featured">Sort: Featured</option>
+          <option value="low">Price: Low → High</option>
+          <option value="high">Price: High → Low</option>
+        </select>
+        <span class="filter-bar__count" id="resultsCount"></span>
+      </div>
+    </div>
+  </div>
+  <section class="section">
+    <div class="container">
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </section>
+</main>
+<div id="footer-placeholder"></div>
+<div class="whatsapp-float">
+  <a href="https://wa.me/27000000000?text=Hi%20QS%20Golf%20Coordinators!%20I%27m%20interested%20in..." target="_blank" rel="noopener">💬</a>
+</div>
+<script type="module">
+  import { PRODUCTS } from './js/products.js';
+  import { renderProductCard, showToast } from './js/utils.js';
+  import { addToCart } from './js/cart.js';
+
+  const CAT = 'Gift Sets';
+  const grid = document.getElementById('productGrid');
+  const count = document.getElementById('resultsCount');
+  const sortSel = document.getElementById('sortFilter');
+
+  function render() {
+    let list = PRODUCTS.filter(p => p.category === CAT);
+    const sort = sortSel.value;
+    if (sort === 'low')  list = [...list].sort((a,b) => a.price - b.price);
+    if (sort === 'high') list = [...list].sort((a,b) => b.price - a.price);
+    grid.innerHTML = list.map(renderProductCard).join('');
+    count.textContent = 'Showing ' + list.length + ' product' + (list.length !== 1 ? 's' : '');
+  }
+
+  sortSel.addEventListener('change', render);
+  render();
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.add-to-cart-btn');
+    if (!btn) return;
+    addToCart(btn.dataset.id);
+    showToast('Added to cart!');
+  });
+</script>
+</body>
+</html>

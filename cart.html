@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart | QS Golf Coordinators</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/includes.js"></script>
+</head>
+<body>
+<div id="announcement-placeholder"></div>
+<div id="nav-placeholder"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <h1 style="margin-bottom:48px">Your Cart</h1>
+      <div id="cartEmpty" style="display:none;text-align:center;padding:60px 0">
+        <div style="font-size:56px;margin-bottom:24px">🛒</div>
+        <h2 style="margin-bottom:16px">Your cart is empty</h2>
+        <p style="color:var(--muted);margin-bottom:32px">Looks like you haven't added anything yet.</p>
+        <a href="index.html" class="btn btn--green">Shop Now</a>
+      </div>
+      <div class="cart-layout" id="cartLayout" style="display:none">
+        <div>
+          <div id="cartItems"></div>
+          <div style="margin-top:24px;display:flex;gap:12px">
+            <a href="index.html" class="btn btn--outline-green btn--sm">← Continue Shopping</a>
+            <button id="clearBtn" class="btn btn--sm" style="background:none;border:1.5px solid var(--border-dark);color:var(--muted)">Clear Cart</button>
+          </div>
+        </div>
+        <div>
+          <div class="order-summary">
+            <h3>Order Summary</h3>
+            <div id="summaryRows"></div>
+            <div class="summary-row summary-row--total">
+              <span>Total <span style="font-size:11px;font-weight:400;color:var(--muted)">(incl. VAT)</span></span>
+              <span id="cartTotal" style="color:var(--green)">R0</span>
+            </div>
+            <p class="vat-note">15% VAT included · Free delivery over R1,500</p>
+            <div class="promo-row">
+              <input class="promo-input" id="promoInput" placeholder="Promo code" maxlength="20">
+              <button class="btn btn--sm btn--green" id="applyPromo">Apply</button>
+            </div>
+            <div id="promoMsg" style="font-size:12px;margin-bottom:12px"></div>
+            <a href="checkout.html" class="btn btn--green btn--full" id="checkoutBtn">Proceed to Checkout →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-placeholder"></div>
+<div class="whatsapp-float">
+  <a href="https://wa.me/27000000000?text=Hi%20QS%20Golf%20Coordinators!%20I%27m%20interested%20in..." target="_blank" rel="noopener">💬</a>
+</div>
+
+<script type="module">
+  import { getCartItems, removeFromCart, updateQty, clearCart, getCartTotal } from './js/cart.js';
+  import { formatPrice, showToast, applyPromo } from './js/utils.js';
+
+  let discount = 0;
+
+  function render() {
+    const items = getCartItems();
+    const empty = document.getElementById('cartEmpty');
+    const layout = document.getElementById('cartLayout');
+    if (!items.length) { empty.style.display = 'block'; layout.style.display = 'none'; return; }
+    empty.style.display = 'none';
+    layout.style.display = 'grid';
+
+    document.getElementById('cartItems').innerHTML = items.map(item => {
+      const variantStr = item.variant.size ? `Size: ${item.variant.size}` : item.variant.colour ? `Colour: ${item.variant.colour}` : '';
+      return `
+        <div class="cart-item">
+          <div class="cart-item__thumb">${item.product.emoji}</div>
+          <div>
+            <div class="cart-item__name">${item.product.name}</div>
+            ${variantStr ? `<div class="cart-item__variant">${variantStr}</div>` : ''}
+            <div class="cart-item__qty">
+              <button class="qty-btn qty-change" data-key="${item.key}" data-d="-1">−</button>
+              <span style="font-size:14px;font-weight:600">${item.qty}</span>
+              <button class="qty-btn qty-change" data-key="${item.key}" data-d="1">+</button>
+            </div>
+            <button class="cart-item__remove remove-item" data-key="${item.key}">Remove</button>
+          </div>
+          <div class="cart-item__price">${formatPrice(item.product.price * item.qty)}</div>
+        </div>`;
+    }).join('');
+
+    const subtotal = getCartTotal();
+    const shipping = subtotal >= 1500 ? 0 : 85;
+    const total = subtotal - discount + shipping;
+
+    document.getElementById('summaryRows').innerHTML = `
+      <div class="summary-row"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+      ${discount ? `<div class="summary-row" style="color:#059669"><span>Discount (GOLF20)</span><span>−${formatPrice(discount)}</span></div>` : ''}
+      <div class="summary-row ${shipping === 0 ? 'summary-row--free' : ''}"><span>Shipping</span><span>${shipping === 0 ? 'Free' : formatPrice(shipping)}</span></div>`;
+    document.getElementById('cartTotal').textContent = formatPrice(total);
+  }
+
+  document.addEventListener('click', e => {
+    const qBtn = e.target.closest('.qty-change');
+    if (qBtn) { updateQty(qBtn.dataset.key, Number(qBtn.dataset.d)); render(); return; }
+    const rBtn = e.target.closest('.remove-item');
+    if (rBtn) { removeFromCart(rBtn.dataset.key); render(); showToast('Item removed'); return; }
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    clearCart(); render(); showToast('Cart cleared');
+  });
+
+  document.getElementById('applyPromo').addEventListener('click', () => {
+    const code = document.getElementById('promoInput').value.trim();
+    const result = applyPromo(code, getCartTotal());
+    const msg = document.getElementById('promoMsg');
+    if (result) {
+      discount = result.discount;
+      msg.textContent = `✓ ${result.label} applied!`;
+      msg.style.color = '#059669';
+      showToast('Promo code applied!');
+    } else {
+      discount = 0;
+      msg.textContent = 'Invalid promo code.';
+      msg.style.color = 'var(--sale)';
+    }
+    render();
+  });
+
+  document.addEventListener('cartUpdated', render);
+  render();
+</script>
+</body>
+</html>

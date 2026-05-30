@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed | QS Golf Coordinators</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/includes.js"></script>
+</head>
+<body>
+<div id="announcement-placeholder"></div>
+<div id="nav-placeholder"></div>
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="success-screen">
+        <div class="success-icon">✅</div>
+        <h1>Order Received!</h1>
+        <p>Thank you for your order. We'll send a confirmation email shortly and begin processing your branded merchandise.</p>
+        <div class="order-number" id="orderNum">Order #QS-000000</div>
+        <div style="background:var(--off-white);border:1px solid var(--border);border-radius:var(--r-xl);padding:28px;margin-bottom:32px;text-align:left" id="orderDetails"></div>
+        <div style="display:flex;gap:14px;justify-content:center">
+          <a href="index.html" class="btn btn--green">Continue Shopping</a>
+          <a href="../QS-Golf-Main/corporate-packages.html" class="btn btn--outline-green">View Corporate Packages</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="footer-placeholder"></div>
+<script type="module">
+  import { formatPrice } from './js/utils.js';
+  const order = JSON.parse(sessionStorage.getItem('qs_last_order') || '{}');
+  if (order.num) {
+    document.getElementById('orderNum').textContent = `Order #${order.num}`;
+    document.getElementById('orderDetails').innerHTML = `
+      <div style="margin-bottom:12px"><strong>What happens next?</strong></div>
+      <ul style="font-size:13px;color:var(--text-body);line-height:2.2">
+        <li>📧 Confirmation email on its way to your inbox</li>
+        <li>🎨 We'll contact you to confirm artwork within 24 hours</li>
+        <li>🏭 Production begins after artwork approval (5–7 business days)</li>
+        <li>🚚 We'll dispatch with tracking once ready</li>
+      </ul>
+      ${order.total ? `<div style="margin-top:16px;font-weight:600;color:var(--green)">Order total: ${formatPrice(order.total)}</div>` : ''}`;
+  }
+</script>
+</body>
+</html>
